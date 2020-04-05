@@ -1,5 +1,7 @@
 # Copyright 2010-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
+# NOTE: this file has been modified from its original by the owner of this repository
+#
 # This file is licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License. A copy of the
 # License is located at

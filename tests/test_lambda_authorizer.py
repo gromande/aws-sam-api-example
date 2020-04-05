@@ -9,7 +9,6 @@ apiId = sys.argv[1]
 user = sys.argv[2]
 effect = sys.argv[3]
 
-# ************* REQUEST VALUES *************
 endpoint = f"https://{apiId}.execute-api.us-east-1.amazonaws.com/Prod/hello"
 
 headers = {"TokenHeader":f"user|{user};{effect}"}

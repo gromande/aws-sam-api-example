@@ -9,6 +9,26 @@ Globals:
     Timeout: 3
 
 Resources:
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      UserPoolName: ApiUserPool
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+  CognitoUserPoolClient:
+     Type: AWS::Cognito::UserPoolClient
+     Properties:
+       UserPoolId: !Ref CognitoUserPool
+       GenerateSecret: false
+       ExplicitAuthFlows:
+       - USER_PASSWORD_AUTH
   LambdaTokenAuthorizerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -29,12 +49,14 @@ Resources:
               "Resource": "execute-api:/*"
             }
           ]
-        DefaultAuthorizer: AWS_IAM
+        DefaultAuthorizer: LambdaTokenAuthorizer
         Authorizers:
           LambdaTokenAuthorizer:
             FunctionArn: !GetAtt LambdaTokenAuthorizerFunction.Arn
             Identity:
               Header: TokenHeader # OPTIONAL; Default: 'Authorization'
+          CognitoAuthorizer:
+             UserPoolArn: !GetAtt CognitoUserPool.Arn
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:

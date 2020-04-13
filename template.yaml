@@ -35,6 +35,17 @@ Resources:
       CodeUri: src/
       Handler: authorizer.lambda_handler
       Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
+  GreetingTableTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: greetingTable
+      PrimaryKey:
+        Name: message_id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -57,18 +68,34 @@ Resources:
               Header: TokenHeader # OPTIONAL; Default: 'Authorization'
           CognitoAuthorizer:
              UserPoolArn: !GetAtt CognitoUserPool.Arn
-  HelloWorldFunction:
+  GetHelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: app.lambda_handler
+      Handler: app.get_lambda_handler
       Runtime: python3.7
+      Policies: AmazonDynamoDBReadOnlyAccess
       Events:
         ApiEvent:
           Type: Api
           Properties:
             Path: /hello
             Method: get
+            RestApiId:
+              Ref: ApiGatewayApi
+  UpdateHelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.post_lambda_handler
+      Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: post
             RestApiId:
               Ref: ApiGatewayApi
 
